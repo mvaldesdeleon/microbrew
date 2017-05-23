@@ -1,12 +1,17 @@
 {
   "name": "microbrew",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Such breweries are generally characterized by their emphasis on quality, flavor and brewing technique.",
   "main": "index.js",
   "scripts": {
     "lint": "eslint ."
   },
   "dependencies": {
+    "express": "^4.15.3",
+    "express-rpc-beeson": "0.0.1",
+    "express-wake": "0.0.1",
+    "got": "^6.7.1",
+    "local-rpc": "0.0.1"
   },
   "devDependencies": {
     "eslint": "^3.19.0"
