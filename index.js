@@ -4,7 +4,7 @@ const rpc = require('express-rpc-beeson');
 const local = require('local-rpc');
 const got = require('got');
 
-function microbrew(module, deps, tracer, debug) {
+function microbrew(module, deps = {}, tracer, debug) {
     const app = express();
 
     const { middleware: rpcMiddleware, consumeWith } = rpc(module, {debug});
@@ -13,7 +13,8 @@ function microbrew(module, deps, tracer, debug) {
     const { middleware: wakeMiddleware, error: wakeError, decorator: traceFn } = wake(tracer);
 
     const doIO = io => typeof io === 'function' ? io() : io;
-    const proxy = (service, method, ...args) => service === 'io' ? doIO(method) : run(service, method, args);
+    const mapDep = service => service in deps ? deps[service] : service;
+    const proxy = (service, method, ...args) => service === 'io' ? doIO(method) : run(mapDep(service), method, args);
     const configTrace = (service, method) => service === 'io' ? { service } : { service, method };
 
     local(traceFn('proxy', configTrace, proxy));
