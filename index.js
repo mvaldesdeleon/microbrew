@@ -14,7 +14,8 @@ function microbrew(module, deps = {}, tracer, debug) {
 
     const doIO = io => typeof io === 'function' ? io() : io;
     const mapDep = service => service in deps ? deps[service] : service;
-    const proxy = (service, method, ...args) => service === 'io' ? doIO(method) : run(mapDep(service), method, args);
+    const camelKebap = camel => camel.replace(/([a-z])([A-Z0-9])|([0-9])([a-zA-Z])/g, (_, l, u, ll, uu) => `${l||ll}-${u||uu}`).toLowerCase();
+    const proxy = (service, method, ...args) => service === 'io' ? doIO(method) : run(mapDep(camelKebap(service)), method, args);
     const configTrace = (service, method) => service === 'io' ? { service } : { service, method };
 
     local(traceFn('proxy', configTrace, proxy));
