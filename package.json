@@ -1,0 +1,24 @@
+{
+  "name": "microbrew",
+  "version": "0.0.1",
+  "description": "Such breweries are generally characterized by their emphasis on quality, flavor and brewing technique.",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0"
+  },
+  "repository": "mvaldesdeleon/microbrew",
+  "keywords": [
+    "beeson",
+    "express-rpc",
+    "express",
+    "middleware",
+    "rpc"
+  ],
+  "author": "Martin Valdes de Leon <m.valdesdeleon@gmail.com>",
+  "license": "MIT"
+}
