@@ -13,7 +13,7 @@ function microbrew(name, module, deps = {}, tracer, debug) {
     const serviceCall = (host, method, args, requestData) => {
         const run = consumeWith((url, options) => {
             options.headers = {
-                'user-agent': `${PKG_NAME}/${PKG_VERSION}-${name}`,
+                'user-agent': `${name} (${PKG_NAME}/${PKG_VERSION})`,
                 'x-wake-request-id': requestData.requestId,
                 'x-wake-operation-id': requestData.operationId
             };
