@@ -6,7 +6,7 @@ const rpc = require('express-rpc-beeson');
 const local = require('local-rpc');
 const got = require('got');
 
-function microbrew(name, module, deps = {}, tracer, debug) {
+function microbrew(name, module, deps = {}, tracer, debug, gateway) {
     const app = express();
 
     const { middleware: rpcMiddleware, consumeWith } = rpc(module, {debug});
@@ -41,10 +41,11 @@ function microbrew(name, module, deps = {}, tracer, debug) {
     local(traceFn('proxy', configTrace, proxy));
 
     if (tracer) app.use(wakeMiddleware);
-    app.use(rpcMiddleware);
+    if (!gateway) app.use(rpcMiddleware);
     if (tracer) app.use(wakeError);
 
-    return function start(port = 5000) {
+    if (gateway) return app;
+    else return function start(port = 5000) {
         const server = app.listen(port);
 
         return { server, app };
@@ -52,5 +53,7 @@ function microbrew(name, module, deps = {}, tracer, debug) {
 }
 
 microbrew.debug = (name, module, deps, tracer) => microbrew(name, module, deps, tracer, true);
+// debug is only relevant for the rpcMiddleware
+microbrew.gateway = (name, module, deps, tracer) => microbrew(name, module, deps, tracer, false, true);
 
 module.exports = microbrew;
