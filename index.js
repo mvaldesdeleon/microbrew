@@ -1,17 +1,27 @@
+const { PKG_NAME, PKG_VERSION } = require('./package.json');
+
 const express = require('express');
 const wake = require('express-wake');
 const rpc = require('express-rpc-beeson');
 const local = require('local-rpc');
 const got = require('got');
 
-function microbrew(module, deps = {}, tracer, debug) {
+function microbrew(name, module, deps = {}, tracer, debug) {
     const app = express();
 
     const { middleware: rpcMiddleware, consumeWith } = rpc(module, {debug});
     const serviceCall = (host, method, args, requestData) => {
-        // TODO here is where we can control the retry-on-error logic, after the consumer API is defined
-        // TODO we need to configure the requester so that it will propagate the request data via headers
-        const run = consumeWith(got);
+        const run = consumeWith((url, options) => {
+            options.headers = {
+                'user-agent': `${PKG_NAME}/${PKG_VERSION}-${name}`,
+                'x-wake-request-id': requestData.requestId,
+                'x-wake-operation-id': requestData.operationId
+            };
+            // TODO here is where we can control the retry-on-error logic, after the consumer API is defined
+            options.retries = 0;
+
+            return got(url, options);
+        });
 
         return run(host, method, args);
     };
@@ -41,6 +51,6 @@ function microbrew(module, deps = {}, tracer, debug) {
     };
 }
 
-microbrew.debug = (module, deps, tracer) => microbrew(module, deps, tracer, true);
+microbrew.debug = (name, module, deps, tracer) => microbrew(name, module, deps, tracer, true);
 
 module.exports = microbrew;
