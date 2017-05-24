@@ -23,7 +23,7 @@ function microbrew(name, module, deps = {}, tracer, debug, gateway) {
             return got(url, options);
         });
 
-        return run(host, method, args);
+        return run(host, method, args, {port: 5000});
     };
 
     const { middleware: wakeMiddleware, error: wakeError, decorator: traceFn } = wake(tracer);
