@@ -6,9 +6,11 @@ const wake = require('express-wake');
 const rpc = require('express-rpc-beeson');
 const local = require('local-rpc');
 const got = require('got');
+const { make } = require('sentencer');
 
-// TODO name should not be mandatory. only module is mandatory....
-function microbrew(name, module, aliases = {}, tracer, debug, gateway) {
+const randomName = () => make('{{ adjective }}-{{ noun }}');
+
+function microbrew(module, name = randomName(), remoteAliases = {}, tracer, debug, gateway) {
     const app = express();
 
     const { middleware: rpcMiddleware, consumeWith } = rpc(module, { debug });
@@ -26,17 +28,18 @@ function microbrew(name, module, aliases = {}, tracer, debug, gateway) {
             return got(url, options);
         });
         const buildConfig = aliasConfig => typeof aliasConfig === 'string' ? { host: aliasConfig } : aliasConfig;
-        const resolve = service => service in aliases ? buildConfig(aliases[service]) : { host: service };
+        const resolve = service => service in remoteAliases ? buildConfig(remoteAliases[service]) : { host: service };
         const { host, port } = Object.assign({ port: DEFAULT_PORT }, resolve(service));
 
         return run(host, method, args, { port });
     };
 
-    const { middleware: wakeMiddleware, error: wakeError, decorator: traceFn } = wake(tracer);
+    const ownTracer = traceData => tracer(Object.assign(traceData, { service: name, gateway: !!gateway }));
+    const { middleware: wakeMiddleware, error: wakeError, decorator: traceFn } = wake(ownTracer);
 
     const doIO = io => typeof io === 'function' ? io() : io;
     const camelKebap = camel => camel.replace(/([a-z])([A-Z0-9])|([0-9])([a-zA-Z])/g, (_, l, u, ll, uu) => `${l||ll}-${u||uu}`).toLowerCase();
-    const configTrace = (service, method) => service === 'io' ? { service } : { service, method };
+    const configTrace = (service, method) => service === 'io' ? { target: service } : { target: service, method };
 
     // we need a real function to have a this argument
     function proxy(service, method, ...args) {
@@ -57,8 +60,8 @@ function microbrew(name, module, aliases = {}, tracer, debug, gateway) {
     };
 }
 
-microbrew.debug = (name, module, aliases, tracer) => microbrew(name, module, aliases, tracer, true);
+microbrew.debug = (module, name, remoteAliases, tracer) => microbrew(module, name, remoteAliases, tracer, true);
 // debug is only relevant for the rpcMiddleware
-microbrew.gateway = (name, module, aliases, tracer) => microbrew(name, module, aliases, tracer, false, true);
+microbrew.gateway = (module, name, remoteAliases, tracer) => microbrew(module, name, remoteAliases, tracer, false, true);
 
 module.exports = microbrew;
