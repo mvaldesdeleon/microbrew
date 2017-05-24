@@ -1,6 +1,6 @@
 {
   "name": "microbrew",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Such breweries are generally characterized by their emphasis on quality, flavor and brewing technique.",
   "main": "index.js",
   "scripts": {
