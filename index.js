@@ -19,6 +19,7 @@ function microbrew(name, module, aliases = {}, tracer, debug, gateway) {
                 'x-wake-request-id': requestData.requestId,
                 'x-wake-operation-id': requestData.operationId
             };
+            options.encoding = null;
             // TODO here is where we can control the retry-on-error logic, after the consumer API is defined
             options.retries = 0;
 
