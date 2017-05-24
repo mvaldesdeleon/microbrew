@@ -7,6 +7,7 @@ const rpc = require('express-rpc-beeson');
 const local = require('local-rpc');
 const got = require('got');
 
+// TODO name should not be mandatory. only module is mandatory....
 function microbrew(name, module, aliases = {}, tracer, debug, gateway) {
     const app = express();
 

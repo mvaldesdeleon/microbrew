@@ -6,7 +6,7 @@ A microbrewery or craft brewery is a brewery that produces small amounts of beer
 const myPromiseBaseModule = require('my-promise-based-module');
 const microbrew = require('microbrew');
 
-microbrew(myPromiseBaseModule)();
+microbrew('myModule', myPromiseBaseModule)();
 // Profit
 ```
 
