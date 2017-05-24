@@ -1,6 +1,6 @@
 {
   "name": "microbrew",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Such breweries are generally characterized by their emphasis on quality, flavor and brewing technique.",
   "main": "index.js",
   "scripts": {
@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "express": "^4.15.3",
-    "express-rpc-beeson": "0.0.9",
-    "express-wake": "0.0.5",
+    "express-rpc-beeson": "0.0.10",
+    "express-wake": "0.0.6",
     "got": "^6.7.1",
     "local-rpc": "0.0.1",
     "sentencer": "^0.1.5"
