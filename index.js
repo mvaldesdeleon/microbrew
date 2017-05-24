@@ -1,4 +1,4 @@
-const { PKG_NAME, PKG_VERSION } = require('./package.json');
+const { name: PKG_NAME, version: PKG_VERSION } = require(`${__dirname}/package.json`);
 const DEFAULT_PORT = 5000;
 
 const express = require('express');
