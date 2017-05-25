@@ -35,7 +35,7 @@ function microbrew(module, name = randomName(), remoteAliases = {}, tracer, debu
     };
 
     const ownTracer = traceData => tracer(Object.assign(traceData, { service: name, gateway: !!gateway }));
-    const { middleware: wakeMiddleware, error: wakeError, decorator: traceFn } = wake(ownTracer);
+    const { middleware: wakeMiddleware, error: wakeError, decorator: traceFn, log } = wake(ownTracer, { debug });
 
     const doIO = io => typeof io === 'function' ? io() : io;
     const camelKebap = camel => camel.replace(/([a-z])([A-Z0-9])|([0-9])([a-zA-Z])/g, (_, l, u, ll, uu) => `${l||ll}-${u||uu}`).toLowerCase();
@@ -46,7 +46,14 @@ function microbrew(module, name = randomName(), remoteAliases = {}, tracer, debu
         return service === 'io' ? doIO(method) : serviceCall(camelKebap(service), method, args, this);
     }
 
-    local(traceFn('proxy', configTrace, proxy));
+    const tracerProxy = traceFn(proxy, configTrace);
+
+    function localHandler(service, method, ...args) {
+        if (service === 'log') return log(method, ...args);
+        else return tracerProxy(service, method, ...args);
+    }
+
+    local(localHandler);
 
     if (tracer) app.use(wakeMiddleware);
     if (!gateway) app.use(rpcMiddleware);
