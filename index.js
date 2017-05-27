@@ -38,12 +38,12 @@ function microbrew(module, name = randomName(), remoteAliases = {}, tracer, debu
     const { middleware: wakeMiddleware, error: wakeError, decorator: traceFn, log } = wake(ownTracer, { debug });
 
     const doIO = io => typeof io === 'function' ? io() : io;
-    const camelKebap = camel => camel.replace(/([a-z])([A-Z0-9])|([0-9])([a-zA-Z])/g, (_, l, u, ll, uu) => `${l||ll}-${u||uu}`).toLowerCase();
+    const camelKebab = camel => camel.replace(/([a-z])([A-Z0-9])|([0-9])([a-zA-Z])/g, (_, l, u, ll, uu) => `${l||ll}-${u||uu}`).toLowerCase();
     const configTrace = (service, method) => service === 'io' ? { target: service } : { target: service, method };
 
     // we need a real function to have a this argument
     function proxy(service, method, ...args) {
-        return service === 'io' ? doIO(method) : serviceCall(camelKebap(service), method, args, this);
+        return service === 'io' ? doIO(method) : serviceCall(camelKebab(service), method, args, this);
     }
 
     const tracerProxy = traceFn(proxy, configTrace);
